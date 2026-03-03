@@ -8,7 +8,6 @@ import metiers.UniteEnseignementBusiness;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.List;
 
 @Path("/module")
 public class ModuleApi {
@@ -16,90 +15,84 @@ public class ModuleApi {
     private ModuleBusiness helper = new ModuleBusiness();
     private UniteEnseignementBusiness ueHelper = new UniteEnseignementBusiness();
 
-
+    // 🔹 Get all modules
     @GET
     @Path("/list")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAll() {
+    public Response getAllModules() {
         return Response.status(200)
                 .entity(helper.getAllModules())
                 .build();
     }
 
-
+    // 🔹 Get module by matricule
     @GET
     @Path("/{matricule}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getByMatricule(@PathParam("matricule") String matricule) {
-        Module m = helper.getModuleByMatricule(matricule);
-        if (m != null) {
-            return Response.status(200).entity(m).build();
-        }
-        return Response.status(404).entity("Module not found").build();
+    public Response getModuleByMatricule(@PathParam("matricule") String matricule) {
+        return Response.status(200)
+                .entity(helper.getModuleByMatricule(matricule))
+                .build();
     }
 
-
+    // 🔹 Get modules by type
     @GET
     @Path("/type/{type}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getByType(@PathParam("type") String type) {
-        try {
-            Module.TypeModule t = Module.TypeModule.valueOf(type.toUpperCase());
-            List<Module> list = helper.getModulesByType(t);
-            return Response.status(200).entity(list).build();
-        } catch (Exception e) {
-            return Response.status(400).entity("Invalid type").build();
-        }
+    public Response getModulesByType(@PathParam("type") String type) {
+        Module.TypeModule typeModule = Module.TypeModule.valueOf(type.toUpperCase());
+        return Response.status(200)
+                .entity(helper.getModulesByType(typeModule))
+                .build();
     }
 
-
+    // 🔹 Get modules by UE code
     @GET
-    @Path("/ue/{code}")
+    @Path("/ue/{codeUE}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getByUE(@PathParam("code") int code) {
-        UniteEnseignement ue = ueHelper.getUEByCode(code);
+    public Response getModulesByUE(@PathParam("codeUE") int codeUE) {
+        UniteEnseignement ue = ueHelper.getUEByCode(codeUE);
+
         if (ue == null) {
-            return Response.status(404).entity("UE not found").build();
+            return Response.status(404)
+                    .entity("UniteEnseignement not found")
+                    .build();
         }
+
         return Response.status(200)
                 .entity(helper.getModulesByUE(ue))
                 .build();
     }
 
-
+    // 🔹 Add module
     @POST
     @Path("/add")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response add(Module module) {
-        boolean ok = helper.addModule(module);
-        if (ok) {
-            return Response.status(201).entity(module).build();
-        }
-        return Response.status(400).entity("Cannot add module (UE not found)").build();
+    public Response addModule(Module module) {
+        return Response.status(200)
+                .entity(helper.addModule(module))
+                .build();
     }
 
+    // 🔹 Update module
     @PUT
     @Path("/update/{matricule}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response update(@PathParam("matricule") String matricule, Module module) {
-        boolean ok = helper.updateModule(matricule, module);
-        if (ok) {
-            return Response.status(200).entity(module).build();
-        }
-        return Response.status(404).entity("Module not found").build();
+    public Response updateModule(@PathParam("matricule") String matricule, Module updatedModule) {
+        return Response.status(200)
+                .entity(helper.updateModule(matricule, updatedModule))
+                .build();
     }
 
-
+    // 🔹 Delete module
     @DELETE
     @Path("/delete/{matricule}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response delete(@PathParam("matricule") String matricule) {
-        boolean ok = helper.deleteModule(matricule);
-        if (ok) {
-            return Response.status(200).entity("Module deleted").build();
-        }
-        return Response.status(404).entity("Module not found").build();
+    public Response deleteModule(@PathParam("matricule") String matricule) {
+        return Response.status(200)
+                .entity(helper.deleteModule(matricule))
+                .build();
     }
 }

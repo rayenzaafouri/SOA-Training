@@ -1,93 +1,98 @@
 package webservices;
 
-import metiers.UniteEnseignementBusiness;
 import entities.UniteEnseignement;
+import metiers.UniteEnseignementBusiness;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.List;
-
 @Path("/ue")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
 public class UERestApi {
-
-    private UniteEnseignementBusiness helper = new UniteEnseignementBusiness();
-
-
+    //methode=webservice de l'UE = rest api
+    public static UniteEnseignementBusiness helper = new UniteEnseignementBusiness();
     @GET
     @Path("/list")
+    // @Consumes(MediaType.APPLICATION_JSON)//type de d entree  est json
+    @Produces(MediaType.APPLICATION_JSON)//type de sortie est text
     public Response getAll() {
-        return Response.ok(helper.getListeUE()).build();
-    }
-
-    @GET
-    @Path("/{code}")
-    public Response getByCode(@PathParam("code") int code) {
-        UniteEnseignement ue = helper.getUEByCode(code);
-        if (ue != null) {
-            return Response.ok(ue).build();
-        }
-        return Response.status(Response.Status.NOT_FOUND)
-                .entity("UE not found")
+        return Response.status(200)
+                .entity(helper.getListeUE())
                 .build();
+        //retutn Response.ok.entity(this.helper.getListeUE()).build();
     }
-
     @POST
     @Path("/add")
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response addUE(UniteEnseignement ue) {
-        boolean added = helper.addUniteEnseignement(ue);
-        if (added) {
-            return Response.status(Response.Status.CREATED)
-                    .entity(ue)
-                    .build();
-        }
-        return Response.status(Response.Status.BAD_REQUEST)
-                .entity("Unable to add UE")
+        return Response.status(201)
+                .entity(helper.addUniteEnseignement(ue))
                 .build();
     }
-
-    @GET
-    @Path("/domaine/{domaine}")
-    public Response getByDomaine(@PathParam("domaine") String domaine) {
-        List<UniteEnseignement> list = helper.getUEByDomaine(domaine);
-        return Response.ok(list).build();
-    }
-
-    @GET
-    @Path("/semestre/{semestre}")
-    public Response getBySemestre(@PathParam("semestre") int semestre) {
-        List<UniteEnseignement> list = helper.getUEBySemestre(semestre);
-        return Response.ok(list).build();
-    }
-
-
-    @PUT
-    @Path("/update/{code}")
-    public Response updateUE(
-            @PathParam("code") int code,
-            UniteEnseignement ue) {
-
-        boolean updated = helper.updateUniteEnseignement(code, ue);
-        if (updated) {
-            return Response.ok(ue).build();
-        }
-        return Response.status(Response.Status.NOT_FOUND)
-                .entity("UE not found")
-                .build();
-    }
-
 
     @DELETE
     @Path("/delete/{code}")
     public Response deleteUE(@PathParam("code") int code) {
-        boolean deleted = helper.deleteUniteEnseignement(code);
-        if (deleted) {
-            return Response.ok("UE deleted successfully").build();
-        }
-        return Response.status(Response.Status.NOT_FOUND)
-                .entity("UE not found")
+        return Response.status(200)
+                .entity(helper.deleteUniteEnseignement(code))
+                .build();
+    }
+    @PUT
+    @Path("/update/{code}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response updateUE(@PathParam("code") int code, UniteEnseignement updatedUE) {
+        return Response.status(200)
+                .entity(helper.updateUniteEnseignement(code, updatedUE))
+                .build();
+    }
+    @GET
+    @Path("{code}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getUEByCode(@PathParam(value = "code") int code) {
+
+        return Response.status(200)
+                .entity(this.helper.getUEByCode(code))
+                .build();
+    }
+    @GET
+    @Path("domaine/{domaine}")
+    @Produces(MediaType.APPLICATION_JSON)//bich ye5dem bil json fi spring boot
+    public Response getUEByDomaine(@PathParam(value = "domaine") String domaine) {
+
+        return Response.status(200)
+                .entity(this.helper.getUEByDomaine(domaine))
+                .build();
+    }
+
+
+
+
+    @GET
+    @Path("Semestre/{Semestre}")
+    @Produces(MediaType.APPLICATION_JSON)//bich ye5dem bil json fi spring boot
+    public Response getUEBySemestre(@PathParam(value = "Semestre") int Semestre) {
+
+        return Response.status(200)
+                .entity(helper.getUEBySemestre(Semestre))
+                .build();
+    }
+    @GET
+    @Path("search")
+    @Produces(MediaType.APPLICATION_JSON)//bich ye5dem bil json fi spring boot
+    public Response getUEBySemestre2(@QueryParam(value = "semestre") int s) {
+
+        return Response.status(200)
+                .entity(helper.getUEBySemestre(s))
+                .build();
+    }
+
+
+    @GET
+    @Path("/test")
+    @Produces(MediaType.TEXT_PLAIN)//bich ye5dem bil json fi spring boot
+    public Response sayHelloQuerry(@QueryParam(value = "name") String name) {
+
+        return Response.status(200)
+                .entity("Hello Querry " + name + "!")
                 .build();
     }
 }
