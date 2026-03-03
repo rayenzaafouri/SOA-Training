@@ -1,0 +1,7 @@
+resourcePackages:
+  - webservices
+openAPI:
+  info:
+    title: API Gestion Enseignement
+    version: "1.0"
+    description: Documentation des modules et unités d'enseignement
